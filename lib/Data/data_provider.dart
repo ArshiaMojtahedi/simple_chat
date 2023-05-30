@@ -14,12 +14,12 @@ class DataProvider {
     }
   }
 
-  Future<Map<String, dynamic>> fetchChatDetails(String chatId) async {
+  Future<List<Map<String, dynamic>>> fetchChatDetails(String chatId) async {
     final response =
         await http.get(Uri.parse('${Constant.baseUrl}${chatId}.json'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return Map<String, dynamic>.from(data);
+      return List<Map<String, dynamic>>.from(data);
     } else {
       throw Exception('Failed to fetch chat details');
     }

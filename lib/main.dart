@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_chat/Presentation/chat_list/chat_list_screen.dart';
 
 import 'App/dependency_injection.dart';
+import 'Presentation/chat_details/chat_details_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
