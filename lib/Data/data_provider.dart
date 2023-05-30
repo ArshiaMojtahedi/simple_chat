@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class DataProvider {
-  static const String baseUrl =
-      'https://jefe-stg-media-bucket.s3.amazonaws.com/programming-test/api/';
+import '../App/constants.dart';
 
+class DataProvider {
   Future<List<Map<String, dynamic>>> fetchChatList() async {
-    final response = await http.get(Uri.parse('${baseUrl}/inbox.json'));
+    final response = await http.get(Uri.parse('${Constant.baseUrl}inbox.json'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return List<Map<String, dynamic>>.from(data);
@@ -16,7 +15,8 @@ class DataProvider {
   }
 
   Future<Map<String, dynamic>> fetchChatDetails(String chatId) async {
-    final response = await http.get(Uri.parse('${baseUrl}${chatId}.json'));
+    final response =
+        await http.get(Uri.parse('${Constant.baseUrl}${chatId}.json'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return Map<String, dynamic>.from(data);
