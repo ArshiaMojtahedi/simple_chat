@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_chat/Data/models/chat_model.dart';
+import 'package:simple_chat/Data/models/message_model.dart';
 import 'package:simple_chat/Presentation/chat_details/cubit/chat_details_cubit.dart';
+
+import '../../App/date_time_convertor.dart';
 
 class ChatDetailsScreen extends StatelessWidget {
   @override
@@ -47,10 +50,12 @@ class _ChatDetailsScreenState extends State<_ChatDetailsScreen> {
 
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: const Color(0xffF0F0F0),
         appBar: AppBar(
+          backgroundColor: Colors.green,
           leading: Navigator.canPop(context)
               ? IconButton(
-                  icon: Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -58,25 +63,18 @@ class _ChatDetailsScreenState extends State<_ChatDetailsScreen> {
               : null,
           title: Row(
             children: [
-              const CircleAvatar(
-                radius: 20,
-                child: Text('A'),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     chatItem.topic,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                   Text(
                     chatItem.members
                         .toString()
                         .substring(1, chatItem.members.toString().length - 1),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
                 ],
               ),
@@ -89,14 +87,17 @@ class _ChatDetailsScreenState extends State<_ChatDetailsScreen> {
               child: BlocBuilder<ChatDetailsCubit, ChatDetailsState>(
                 builder: (context, state) {
                   if (state is ChatDetailsLoading) {
-                    return CircularProgressIndicator();
+                    return const SizedBox(
+                        width: 500,
+                        height: 207,
+                        child: CircularProgressIndicator());
                   } else if (state is ChatDetailsLoaded) {
-                    WidgetsBinding.instance?.addPostFrameCallback((_) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
                       _scrollToBottom();
                     });
 
                     return Container(
-                      margin: EdgeInsets.all(16),
+                      margin: const EdgeInsets.all(16),
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount: state.messages.length,
@@ -105,7 +106,7 @@ class _ChatDetailsScreenState extends State<_ChatDetailsScreen> {
                           final isSender = message.sender == 'Me';
 
                           return ChatBubble(
-                            message: message.message,
+                            message: message,
                             isSender: isSender,
                           );
                         },
@@ -126,7 +127,32 @@ class _ChatDetailsScreenState extends State<_ChatDetailsScreen> {
                   Expanded(
                     child: TextField(
                       controller: _textEditingController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.only(
+                            top: 20, right: 20, left: 12, bottom: 12),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xffCCCBC9),
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12.0),
+                          ),
+                        ),
+                        fillColor: Color(0xffF8F8F8),
+                        filled: true,
+                        hintStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black26,
+                            fontSize: 16),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.black45, width: 2),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12.0),
+                          ),
+                        ),
                         hintText: 'Type a message',
                       ),
                       maxLines: null, // Allow multiple lines
@@ -171,7 +197,7 @@ class _ChatDetailsScreenState extends State<_ChatDetailsScreen> {
 }
 
 class ChatBubble extends StatelessWidget {
-  final String message;
+  final MessageModel message;
   final bool isSender;
 
   const ChatBubble({
@@ -184,19 +210,50 @@ class ChatBubble extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: isSender ? Colors.blue : Colors.grey,
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Text(
-          message,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          !isSender
+              ? Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    message.sender + ":",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                )
+              : SizedBox(),
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color:
+                  isSender ? const Color(0xffFDCF8C6) : const Color(0xffECE5DD),
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Text(
+              message.message,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+              ),
+            ),
           ),
-        ),
+          SizedBox(
+            height: 4,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text(
+              DateTimeUtils.formatTime(message.modifiedAt),
+              style: const TextStyle(
+                color: Colors.black45,
+                fontSize: 10.0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -52,7 +52,7 @@ class ChatDetailsCubit extends Cubit<ChatDetailsState> {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         message: 'Received: $message',
         modifiedAt: DateTime.now().millisecondsSinceEpoch,
-        sender: 'Chat Bot', // Assuming the sender is 'Chat Bot'
+        sender: 'Auto Respond',
       );
 
       // Add the response message to the list

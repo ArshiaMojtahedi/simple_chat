@@ -1,4 +1,5 @@
 import 'package:avatar_stack/avatar_stack.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:simple_chat/Data/models/chat_model.dart';
 import 'package:simple_chat/Presentation/chat_details/chat_details_screen.dart';
 import 'package:simple_chat/Presentation/chat_list/cubit/chat_list_cubit.dart';
+
+import '../../App/date_time_convertor.dart';
 
 class ChatListScreen extends StatelessWidget {
   @override
@@ -26,12 +29,15 @@ class _ChatListScreen extends StatelessWidget {
     _bloc.fetchChatList();
 
     return Scaffold(
+      appBar: AppBar(
+        title: Header(),
+        backgroundColor: Colors.green,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              const Header(),
               const SizedBox(
                 height: 24,
               ),
@@ -44,8 +50,9 @@ class _ChatListScreen extends StatelessWidget {
                       child: ListView.separated(
                         itemBuilder: (context, index) =>
                             ChatListItem(state.chatList[index], index),
-                        separatorBuilder: (context, index) => const SizedBox(
-                          height: 10,
+                        separatorBuilder: (context, index) => const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(),
                         ),
                         itemCount: state.chatList.length,
                       ),
@@ -79,19 +86,11 @@ class ChatListItem extends StatelessWidget {
       ]),
       child: Row(
         children: [
-          (chatItem.members.length == 1)
-              ? const CircleAvatar(
-                  radius: 28,
-                  child: Text('A'),
-                )
-              : AvatarStack(
-                  height: 33,
-                  width: 56,
-                  avatars: [
-                    for (var n = 0; n < chatItem.members.length; n++)
-                      NetworkImage('https://i.pravatar.cc/150?img=$n'),
-                  ],
-                ),
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: Colors.red.shade400,
+            child: Text(chatItem.topic.substring(0, 1).toUpperCase()),
+          ),
           const SizedBox(
             width: 12,
           ),
@@ -99,11 +98,18 @@ class ChatListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                chatItem.topic,
+                chatItem.members
+                    .toString()
+                    .substring(1, chatItem.members.toString().length - 1),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+              const SizedBox(
+                height: 4,
+              ),
               Text(
-                chatItem.lastMessage,
+                chatItem.lastMessage +
+                    " - " +
+                    DateTimeUtils.formatTime(chatItem.modifiedAt),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
@@ -126,16 +132,24 @@ class Header extends StatelessWidget {
       children: [
         Row(
           children: [
+            const SizedBox(
+              width: 12,
+            ),
             const CircleAvatar(
               radius: 20,
-              child: Text('A'),
+              backgroundImage: (kIsWeb)
+                  ? AssetImage('profile.jpeg')
+                  : AssetImage('assets/profile.jpeg'),
             ),
             const SizedBox(
               width: 12,
             ),
             Text(
               'Chats',
-              style: Theme.of(context).textTheme.labelLarge,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.apply(color: Colors.white),
             ),
           ],
         ),
