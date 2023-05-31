@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_chat/Presentation/chat_list/chat_list_screen.dart';
+
+import 'App/dependency_injection.dart';
+import 'Presentation/chat_details/chat_details_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //Implememt getIt
+  await setupDependencyInjection();
   runApp(const MyApp());
 }
 
@@ -40,7 +44,7 @@ class MyApp extends StatelessWidget {
           labelLarge: const TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.white,
           ),
           labelMedium: const TextStyle(
             fontSize: 17,
@@ -48,7 +52,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Container(),
+      home: ChatListScreen(),
     );
   }
 }

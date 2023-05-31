@@ -27,11 +27,10 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<Either<Exception, List<MessageModel>>> getChatDetails(
       String chatId) async {
     try {
-      final Map<String, dynamic> chatDetailsData =
+      final List<Map<String, dynamic>> chatDetailsData =
           await dataProvider.fetchChatDetails(chatId);
-      final List<MessageModel> messages = [
-        MessageModel.fromJson(chatDetailsData)
-      ];
+      final List<MessageModel> messages =
+          chatDetailsData.map((data) => MessageModel.fromJson(data)).toList();
       return Right(messages);
     } catch (e) {
       return Left(Exception('Failed to get chat details: $e'));
